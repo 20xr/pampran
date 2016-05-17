@@ -36,7 +36,7 @@
         "scripts/newrelic.sh",
         "scripts/papertrail.sh",
         "scripts/redis.sh",
-        "scripts/mysql.sh"        
+        "scripts/mysql.sh"
       ]
     },
     {
