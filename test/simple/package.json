@@ -1,0 +1,25 @@
+{
+  "name": "simple",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "contributors": [
+    {
+      "name": "Mark Wallace",
+      "email": "mark.t.wallace@gmail.com"
+    }
+  ],
+  "main": "main.js",
+  "scripts": {
+    "lint": "eslint --cache .",
+    "start": "node lib/main.js --color=always"
+  },
+  "dependencies": {
+    "async": "1.5.2"
+  },
+  "bundledDependencies": [
+    "async"
+  ],
+  "devDependencies": {
+  }
+}
