@@ -34,12 +34,22 @@ To create an instance for testing, first create an IAM profile for AmazonS3ReadO
 
 #### Step 3, Create S3 bucket
 
-[need to write shell script for this]
+In this example, we create a bucket for the node package in the test directory called 'simple'. Keep in mind that S3 bucket names must be globally unique, even if they are private buckets, as in this example. You need to use your own bucket name, and make it weird enough to be globally unique or the command will fail
+
+`aws s3 mb s3://simple.freak-domain.party`
 
 #### Step 4, Upload your node package to the bucket
 
-[need to write shell script for this]
-[use the example project here]
+We provide a shell script for this. The script uploads into the bucket a file named 'version' which consists of three lines:
+
+1. A unique version id, which must be a valid directory name. The script uses the current date.
+2. The name of the tar file for the npm package
+3. The name of the package (for npm Starting)
+
+It also uploads the npm package as a tar file. The script runs `npm pack` to create the tar file. Example:
+
+`cd test/simple`
+`../../tools/upload.sh simple.freak-domain.party`
 
 #### Step 5, Start an EC2 instance
 

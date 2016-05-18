@@ -14,12 +14,12 @@
       "source_ami": "ami-f5f41398",
       "instance_type": "t2.small",
       "ssh_username": "ec2-user",
-      "ami_name": "jade-base-ami.{{timestamp}}",
+      "ami_name": "pampran-ami.{{timestamp}}",
       "run_tags": {
         "env": "packer"
       },
       "tags": {
-        "Name": "jade-base-ami",
+        "Name": "pampran-ami",
         "branch": "{{user `branch`}}",
         "build": "#{{user `build`}}"
       }
@@ -36,7 +36,8 @@
         "scripts/newrelic.sh",
         "scripts/papertrail.sh",
         "scripts/redis.sh",
-        "scripts/mysql.sh"
+        "scripts/mysql.sh",
+        "scripts/jq.sh"
       ]
     },
     {
@@ -56,6 +57,12 @@
       "scripts": [
         "scripts/files-post.sh",
         "scripts/services.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/npm-common.sh"
       ]
     }
   ]
