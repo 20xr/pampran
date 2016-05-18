@@ -11,7 +11,7 @@ To use this, you must:
 
 0. Have an interest in using node.js with Redis and MySQL
 0. Have an AWS account
-0. Have a Papertrail account (see papertrailapp.com)
+0. Have a Papertrail account, a free one is fine (see papertrailapp.com)
 0. Fork or clone this repo onto your dev machine
 0. Have packer installed on your local system (linux or OSX, see packer.io for install instructions)
 
@@ -22,7 +22,11 @@ Procedure
 Make sure you local system has the AWS CLI installed and working. See http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html for help with this.
 
 #### Step 1, Packer build
-In your clone of this repo,
+In your clone of this repo, first modify two files to include correct address and port for using the Papertrail logging system.
+
+Edit `files/etc/rsyslog.d` and `files/etc/log_files.yml` to change the address and port number to the one you see when you click "Add System" at papertrailapp.com.
+
+Now you can run the packer build, which will take a few minutes:
 
     cd pampran
     packer build packer.json
@@ -53,4 +57,18 @@ It also uploads the npm package as a tar file. The script runs `npm pack` to cre
 
 #### Step 5, Start an EC2 instance
 
-[]
+To test this, launch an EC2 instance from the AWS console:
+1. In the EC dashboard, select AMI, the choose the AMI that was just built by Packer.
+2. Press the Launch button, and in the launch wizard choose an instance type (micro or small is fine for a test.)
+3. Next: Configure Instance Details, then select the IAM role you created in step 2.
+4. Continue through the Wizard to Tag Instance, pick a name you will recognize, then create another tag with the Key: "tarBucket" with the value being the name of the s3 bucket you created in step 3, e.g. "simple.freak-domain.party".
+
+When this instance comes up, it will download the 'simple' package from the tarBucket, and start it.
+
+#### Step 5, Monitor server log with Papertrail
+
+Go to papertrailapp.com (you should have created an account there before starting this) and select the 'events' tab. The log messages for the server you started will show up next to the AWS internal IP address for the EC2 instance.
+
+Generally you will not need to ssh into your instance, since you can see the logs here. If you see a bug, you very often can fix it in your node code and use the tools/upload.sh script to deploy the fix.
+
+This can be a nice way to do live development for the server for a mobile app, so you can test the deployed app on your phone while you monitor the server with papertrail and fix problem by uploading new code to S3.
