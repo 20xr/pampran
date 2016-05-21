@@ -72,3 +72,9 @@ Go to papertrailapp.com (you should have created an account there before startin
 Generally you will not need to ssh into your instance, since you can see the logs here. If you see a bug, you very often can fix it in your node code and use the tools/upload.sh script to deploy the fix.
 
 This can be a nice way to do live development for the server for a mobile app, so you can test the deployed app on your phone while you monitor the server with papertrail and fix problem by uploading new code to S3.
+
+
+Known Bugs
+==========
+1. When rebooting instance, it will not start the app if the app does not need to be pulled from s3
+2. Logging is going to forever.log instead of out.log

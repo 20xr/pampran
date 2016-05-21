@@ -14,6 +14,7 @@ chmod 755 /etc/rc.d/rc.local
 chmod 644 /etc/rsyslog.d/90-papertrail.conf
 chmod 644 /etc/log_files.yml
 chmod 777 /var/log/papertrail
+chmod 666 /var/log/papertrail/forever.log
 chmod 666 /var/log/papertrail/init.log
 chmod 666 /var/log/papertrail/out.log
 chmod 666 /var/log/papertrail/err.log

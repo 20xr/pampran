@@ -25,4 +25,4 @@ pkill -f forever/bin/monitor
 
 LOGDIR=/var/log/papertrail
 FOREVER=~/node_modules/forever/bin/forever
-${FOREVER} start -a -l ${LOGDIR}/forever.log -o ${LOGDIR}/out.log -e ${LOGDIR}/err.log -c "npm start" ./ &
+${FOREVER} start -a -o ${LOGDIR}/out.log -e ${LOGDIR}/err.log -l ${LOGDIR}/forever.log -c "npm start" ./ &

@@ -15,10 +15,14 @@
     "start": "node lib/main.js --color=always"
   },
   "dependencies": {
-    "async": "1.5.2"
+    "async": "^1.5.2",
+    "redis": "^2.6.0-2",
+    "mysql": "^2.10.2"
   },
   "bundledDependencies": [
-    "async"
+    "async",
+    "redis",
+    "mysql"
   ],
   "devDependencies": {
   }

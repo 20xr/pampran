@@ -8,5 +8,6 @@ files:
   - /var/log/rc.local.log
   - /var/log/newrelic/*.log
   - /var/log/papertrail/init.log
-  - /var/log/papertrail/*.log
-  - /var/log/papertrail/*/*.log
+  - /var/log/papertrail/forever.log
+  - /var/log/papertrail/log.log
+  - /var/log/papertrail/err.log
