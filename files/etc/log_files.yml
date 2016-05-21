@@ -7,6 +7,6 @@ files:
   - /var/log/cloud-init-output.log
   - /var/log/rc.local.log
   - /var/log/newrelic/*.log
-  - /var/log/pampran/bootstrap.log
-  - /var/log/pampran/*.log
-  - /var/log/pampran/*/*.log
+  - /var/log/papertrail/init.log
+  - /var/log/papertrail/*.log
+  - /var/log/papertrail/*/*.log

@@ -15,6 +15,7 @@ fi
 mkdir ${DEPLOY_DIR}
 cd ${DEPLOY_DIR}
 aws s3 cp s3://${TAR_BUCKET}/${TARBALL} .
+mkdir node_modules
 npm install ${TARBALL}
 cd node_modules
 cd ${PACKAGE}
@@ -22,6 +23,6 @@ cd ${PACKAGE}
 # kill existing server before restarting
 pkill -f forever/bin/monitor
 
-LOGDIR=/var/log/pampran
+LOGDIR=/var/log/papertrail
 FOREVER=~/node_modules/forever/bin/forever
 ${FOREVER} start -a -l ${LOGDIR}/forever.log -o ${LOGDIR}/out.log -e ${LOGDIR}/err.log -c "npm start" ./ &

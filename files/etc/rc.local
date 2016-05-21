@@ -26,4 +26,4 @@ echo >> /etc/newrelic/nrsysmond.cfg
 /etc/init.d/newrelic-sysmond start
 
 echo Starting user process...
-runuser -l ec2-user -c './aws_init.sh &> /var/log/pampran/pampran.log'
+runuser -l ec2-user -c './aws_init.sh &> /var/log/papertrail/init.log'

@@ -17,5 +17,5 @@ echo Export known instance tags with friendly names...
 export INSTANCE_NAME=${TAG_Name}
 export TAR_BUCKET=${TAG_tarBucket}
 
-/opt/pampran/pollS3.sh
-/opt/pampran/repeatPoll.sh
+./pollS3.sh
+./repeatPoll.sh
