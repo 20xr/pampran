@@ -17,8 +17,8 @@ fi
 mkdir ${DEPLOY_DIR}
 cd ${DEPLOY_DIR}
 aws s3 cp s3://${TAR_BUCKET}/${TARBALL} .
-mkdir node_modules
-npm install ${TARBALL}
+tar xf ${TARBALL}
+npm install
 
 # kill existing server before restarting
 pkill -f forever/bin/monitor
