@@ -10,6 +10,6 @@ if [ -f version ]; then
   EXISTING_SERVER=$(pgrep -f forever/bin/monitor)
   if [ -z EXISTING_SERVER ]; then
     cd ${DEPLOY_DIR}/node_modules/${PACKAGE}
-    ${FOREVER} start -a -o ${LOGDIR}/out.log -e ${LOGDIR}/err.log -l ${LOGDIR}/forever.log -c "npm start" ./ &
+    ${FOREVER} start -m 5 -a -o ${LOGDIR}/out.log -e ${LOGDIR}/err.log -l ${LOGDIR}/forever.log -c "npm start" ./ &
   fi
 fi
