@@ -23,4 +23,4 @@ npm install ${TARBALL}
 # kill existing server before restarting
 pkill -f forever/bin/monitor
 
-./startPackage.sh
+$HOME/startPackage.sh
