@@ -1,5 +1,6 @@
 const redis = require("redis")
 const mysql = require("mysql")
+const AWS = require("aws-sdk")
 
 function main() {
   console.log("About to create redis client")
@@ -20,6 +21,25 @@ function main() {
     client.quit()
   })
   console.log("Redis worked, maybe")
+
+  console.log("About to test DynamoDB")
+
+  const ddb = new AWS.DynamoDB()
+
+  var params = {
+      TableName: "sb2-users",
+      Key: {
+          "userId":  {S: "UCX7qjhMCbPU"}
+      }
+  }
+
+  ddb.getItem(params, (err, result) => {
+    if (err) console.log(err)
+
+    console.log(result)
+  })
+
+  console.log("DynamoDB worked, maybe")
 
   let n = 0
   function loop() {

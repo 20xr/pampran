@@ -37,6 +37,7 @@
         "scripts/papertrail.sh",
         "scripts/redis.sh",
         "scripts/mysql.sh",
+        "scripts/devtools.sh",
         "scripts/jq.sh"
       ]
     },
