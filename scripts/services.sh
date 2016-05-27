@@ -5,5 +5,4 @@ set -o errexit -o pipefail -o nounset
 echo Turning off sendmail...
 chkconfig sendmail off
 
-chkconfig redis on
 chkconfig mysqld on

@@ -18,6 +18,7 @@ mkdir ${DEPLOY_DIR}
 cd ${DEPLOY_DIR}
 aws s3 cp s3://${TAR_BUCKET}/${TARBALL} .
 tar xf ${TARBALL}
+cd package
 npm install
 
 # kill existing server before restarting
