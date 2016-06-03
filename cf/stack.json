@@ -43,6 +43,9 @@
         "UserData":{"Fn::Base64":{"Fn::Join":[
           "",
           [
+            "CACHE_CLUSTER=",
+            {"Ref":"CacheCluster"},
+            "\n",
             "DB_HOST=",
             {"Fn::GetAtt":["Database","Endpoint.Address"]},
             "\n",
@@ -54,12 +57,6 @@
             "\n",
             "DB_PASSWORD=",
             {"Ref":"DBPassword"},
-            "\n",
-            "CACHE_CLUSTER_ID=",
-            {"Ref":"CacheCluster"},
-            "\n",
-            "REPLICATION_GROUP_ID=",
-            {"Ref":"ReplicationGroupId"},
             "\n",
             "DB_NAME=appdb",
             "\n"
@@ -116,20 +113,20 @@
     "CacheSecurityGroup":{
       "Type":"AWS::EC2::SecurityGroup",
       "Properties":{
-        "GroupDescription":"SecurityGroupfortheRediscache.AllowsanyserverintheVPCtoconnect.",
+        "GroupDescription":"CacheSecurityGroup",
         "SecurityGroupIngress":[{"IpProtocol":"tcp","FromPort":{"Ref":"CacheNodePort"},"ToPort":{"Ref":"CacheNodePort"},"CidrIp":{"Ref":"VpcIpBlock"}}],
         "VpcId":{"Ref":"Vpc"}
       }
     },
     "CacheSubnetGroup":{
       "Type":"AWS::ElastiCache::SubnetGroup",
-      "Properties":{"Description":"SubnetGroupfortheCacheCluster","SubnetIds":[{"Ref":"Subnet1"},{"Ref":"Subnet3"},{"Ref":"Subnet3"}]}
+      "Properties":{"SubnetIds":[{"Ref":"Subnet1"},{"Ref":"Subnet3"},{"Ref":"Subnet3"}]}
     },
     "Database":{
       "Type":"AWS::RDS::DBInstance",
       "Properties":{
         "AllocatedStorage":{"Ref":"DBAllocatedStorage"},
-        "AvailabilityZone":{"Fn::If":["DatabaseMultiAvailabilityZonesCondition",{"Ref":"AWS::NoValue"},{"Ref":"DatabaseAvailabilityZone"}]},
+        "AvailabilityZone": {"Fn::Select" : [1, {"Fn::GetAZs":""}]},
         "BackupRetentionPeriod":{"Ref":"DBBackupRetentionPeriod"},
         "DBInstanceClass":{"Ref":"DBInstanceClass"},
         "DBInstanceIdentifier":{"Fn::Join":["-",["Armor",{"Ref":"AWS::StackName"}]]},
@@ -139,7 +136,6 @@
         "Engine":"mysql",
         "MasterUsername":{"Ref":"DBUsername"},
         "MasterUserPassword":{"Ref":"DBPassword"},
-        "MultiAZ":{"Ref":"DatabaseMultiAvailabilityZones"},
         "Port":{"Ref":"DBPort"},
         "VPCSecurityGroups":[{"Ref":"DatabaseSecurityGroup"}]
       }
@@ -147,15 +143,9 @@
     "DatabaseSecurityGroup":{
       "Type":"AWS::EC2::SecurityGroup",
       "Properties":{
-        "GroupDescription":"SecurityGroupfortheDatabase.AllowsanyserverintheVPCtoconnect.",
+        "GroupDescription":"DatabaseSecurityGroup",
         "SecurityGroupIngress":[
-          {"IpProtocol":"tcp","FromPort":{"Ref":"DBPort"},"ToPort":{"Ref":"DBPort"},"CidrIp":{"Ref":"VpcIpBlock"}},
-          {
-            "CidrIp":{"Ref":"VpcIpBlock"},
-            "FromPort":{"Ref":"DatabaseReadReplicaPort"},
-            "IpProtocol":"tcp",
-            "ToPort":{"Ref":"DatabaseReadReplicaPort"}
-          }
+          {"IpProtocol":"tcp","FromPort":{"Ref":"DBPort"},"ToPort":{"Ref":"DBPort"},"CidrIp":{"Ref":"VpcIpBlock"}}
         ],
         "VpcId":{"Ref":"Vpc"}
       }
@@ -299,7 +289,7 @@
         "Tags":[
           {
             "Key":"Name",
-            "Value":{"Fn::Join":["",[{"Ref":"AWS::StackName"}," (",{"Fn::Select":["2",{"Fn::GetAZs":{"Ref":"AWS::Region"}}]},")"]]}
+            "Value":{"Fn::Join":["",[{"Ref":"AWS::StackName"}," (",{"Fn::Select":["2",{"Fn::GetAZs":""}]},")"]]}
           }
         ],
         "VpcId":{"Ref":"Vpc"}
