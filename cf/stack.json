@@ -1,10 +1,10 @@
 {
   "Conditions":{
-    "NotificationCondition":{"Fn::Not":[{"Fn::Equals":[{"Ref":"NotificationTopicArn"},"none"]}]},
+    "NotificationCondition":{"Fn::Not":[{"Fn::Equals":[{"Ref":"NotificationEmailAddress"},"none"]}]},
     "UseSSLCondition":{"Fn::Not":[{"Fn::Equals":[{"Ref":"SSLCertificateId"},"none"]}]}
   },
   "Parameters":{
-    "AsgInstanceCount":{"Type":"Number","Default":"1"},
+    "AsgDesiredCapacity":{"Type":"Number","Default":"1"},
     "AsgMaxSize":{"Type":"Number","Default":"1"},
     "AsgMinSize":{"Type":"Number","Default":"1"},
     "CacheClusterName":{"Type":"String","Default":"AppCluster"},
@@ -72,13 +72,13 @@
       "Properties":{
         "AvailabilityZones":{"Fn::GetAZs":{"Ref":"AWS::Region"}},
         "Cooldown":"60",
-        "DesiredCapacity":{"Ref":"GarageServiceAsgInstanceCount"},
+        "DesiredCapacity":{"Ref":"AsgDesiredCapacity"},
         "HealthCheckGracePeriod":"30",
         "HealthCheckType":"ELB",
-        "LaunchConfigurationName":{"Ref":"GarageServiceLaunchConfiguration"},
-        "LoadBalancerNames":[{"Ref":"GarageServiceLoadBalancer"}],
-        "MaxSize":{"Ref":"GarageServiceAsgMaxSize"},
-        "MinSize":{"Ref":"GarageServiceAsgMinSize"},
+        "LaunchConfigurationName":{"Ref":"AppLaunchConfiguration"},
+        "LoadBalancerNames":[{"Ref":"ElbResource"}],
+        "MaxSize":{"Ref":"AsgMaxSize"},
+        "MinSize":{"Ref":"AsgMinSize"},
         "NotificationConfigurations":{"Fn::If":[
           "NotificationCondition",
           {
@@ -89,7 +89,7 @@
               "autoscaling:EC2_INSTANCE_TERMINATE_ERROR",
               "autoscaling:TEST_NOTIFICATION"
             ],
-            "TopicARN":{"Ref":"NotificationTopicArn"}
+            "TopicARN":{"Ref":"NotificationTopic"}
           },
           {"Ref":"AWS::NoValue"}
         ]},
@@ -220,7 +220,7 @@
       "Type":"AWS::SNS::Topic",
       "Properties":{
         "DisplayName":{"Fn::Join":[" ",["AWS event from environment",{"Ref":"AWS::StackName"}]]},
-        "Subscription":[{"Protocol":"email","Endpoint":{"Ref":"NotificationTopicEmail"}}],
+        "Subscription":[{"Protocol":"email","Endpoint":{"Ref":"NotificationEmailAddress"}}],
         "TopicName":{"Fn::Join":["-",[{"Ref":"AWS::StackName"},"notifications"]]}
       }
     },
