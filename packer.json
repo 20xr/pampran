@@ -35,9 +35,10 @@
         "scripts/nodejs.sh",
         "scripts/newrelic.sh",
         "scripts/papertrail.sh",
-        "scripts/redis.sh",
         "scripts/mysql.sh",
-        "scripts/jq.sh"
+        "scripts/jq.sh",
+        "scripts/devtools.sh",
+        "scripts/redis.sh"
       ]
     },
     {

@@ -17,5 +17,8 @@ echo Export known instance tags with friendly names...
 export INSTANCE_NAME=${TAG_Name}
 export TAR_BUCKET=${TAG_tarBucket}
 
+export REDIS_URL=127.0.0.1:6379
+
+./startPackage.sh
 ./pollS3.sh
 ./repeatPoll.sh

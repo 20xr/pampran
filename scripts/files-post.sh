@@ -21,3 +21,4 @@ chmod 666 /var/log/papertrail/err.log
 chmod 755 /home/ec2-user/aws_init.sh
 chmod 755 /home/ec2-user/pollS3.sh
 chmod 755 /home/ec2-user/repeatPoll.sh
+chmod 755 /home/ec2-user/startPackage.sh

@@ -8,8 +8,11 @@ S3BUCKET=$1
 VERSION_ID=`date +"%Y-%m-%d-%H%M%S"`
 # This creates the tar file based on the npm package.json file
 TARFILE=`npm pack`
+# The next 4 lines trim off everything after the last dash (-)
 IFS='-' read -ra TARFILE_SPLIT <<< "${TARFILE}"
-PACKAGE_NAME=${TARFILE_SPLIT[0]}
+unset TARFILE_SPLIT[${#TARFILE_SPLIT[@]}-1]
+function join { local IFS="$1"; shift; echo "$*"; }
+PACKAGE_NAME=`join - "${TARFILE_SPLIT[@]}"`
 
 cat <<EOF > version
 ${VERSION_ID}
@@ -21,5 +24,5 @@ EOF
 aws s3 cp ${TARFILE} s3://${S3BUCKET}
 aws s3 cp version s3://${S3BUCKET}
 
-rm version
+#rm version
 rm ${TARFILE}
