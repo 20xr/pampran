@@ -1,17 +1,14 @@
 {
   "variables": {
-    "aws_access_key": "{{env `AWS_ACCESS_KEY`}}",
-    "aws_secret_key": "{{env `AWS_SECRET_KEY`}}",
     "branch": "{{env `user`}}",
-    "build": "{{timestamp}}"
+    "build": "{{timestamp}}",
+    "newrelic": ""
   },
   "builders": [
     {
       "type": "amazon-ebs",
-      "access_key": "{{user `aws_access_key`}}",
-      "secret_key": "{{user `aws_secret_key`}}",
-      "region": "us-east-1",
-      "source_ami": "ami-f5f41398",
+      "region": "us-west-2",
+      "source_ami": "ami-d0f506b0",
       "instance_type": "t2.small",
       "ssh_username": "ec2-user",
       "ami_name": "pampran-ami.{{timestamp}}",
@@ -30,6 +27,7 @@
       "type": "shell",
       "pause_before": "30s",
       "execute_command": "{{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
+      "environment_vars": ["NEWRELIC_LICENSE={{user `newrelic`}}"],
       "scripts": [
         "scripts/yum-update.sh",
         "scripts/nodejs.sh",
