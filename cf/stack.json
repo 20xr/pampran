@@ -114,7 +114,7 @@
       "Type":"AWS::EC2::SecurityGroup",
       "Properties":{
         "GroupDescription":"CacheSecurityGroup",
-        "SecurityGroupIngress":[{"IpProtocol":"tcp","FromPort":{"Ref":"CacheNodePort"},"ToPort":{"Ref":"CacheNodePort"},"CidrIp":{"Ref":"VpcIpBlock"}}],
+        "SecurityGroupIngress":[{"IpProtocol":"tcp","FromPort":{"Ref":"RedisPort"},"ToPort":{"Ref":"RedisPort"},"CidrIp":{"Ref":"VpcIpBlock"}}],
         "VpcId":{"Ref":"Vpc"}
       }
     },
@@ -171,7 +171,7 @@
         "HealthCheck":{
           "HealthyThreshold":2,
           "Interval":10,
-          "Target":{"Fn::Join":["","HTTP:",{"Ref":"ServerPort"},"/healthcheck"]},
+          "Target":{"Fn::Join":["",["HTTP:",{"Ref":"ServerPort"},"/healthcheck"]]},
           "Timeout":5,
           "UnhealthyThreshold":2
         },

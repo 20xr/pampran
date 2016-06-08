@@ -17,5 +17,5 @@ aws cloudformation create-stack \
   --on-failure DO_NOTHING \
   --capabilities CAPABILITY_IAM \
   --parameters \
-  ParameterKey=Domain,ParameterValue=${DOMAIN_NAME} \
+  ParameterKey=DomainName,ParameterValue=${DOMAIN_NAME} \
   ParameterKey=ImageId,ParameterValue=${AMI_ID}
