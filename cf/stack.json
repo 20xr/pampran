@@ -1,6 +1,6 @@
 {
   "Conditions":{
-    "NotificationCondition":{"Fn::Not":[{"Fn::Equals":[{"Ref":"NotificationEmailAddress"},"none"]}]},
+    "NotificationCondition":{"Fn::Not":[{"Fn::Equals":[{"Ref":"NotificationEmailAddress"},""]}]},
     "UseSSLCondition":{"Fn::Not":[{"Fn::Equals":[{"Ref":"SSLCertificateId"},"none"]}]}
   },
   "Parameters":{
@@ -20,7 +20,7 @@
     "DBUsername":{"Type":"String","Default":"DBUser"},
     "DomainName":{"Type":"String"},
     "ImageId":{"Description":"AMI ID for LaunchConfiguration","Type":"String"},
-    "NotificationEmailAddress":{"Type":"String","Default":"none"},
+    "NotificationEmailAddress":{"Type":"String","Default":""},
     "RedisPort":{"Description":"Redis port","Type":"Number","Default":"6379"},
     "ServerInstanceMonitoring":{"Type":"String","Default":"false"},
     "ServerInstanceType":{"Type":"String","Default":"t2.small"},
@@ -119,8 +119,8 @@
       }
     },
     "CacheSubnetGroup":{
-      "Type":"AWS::ElastiCache::SubnetGroup",
-      "Properties":{"SubnetIds":[{"Ref":"Subnet1"},{"Ref":"Subnet3"},{"Ref":"Subnet3"}]}
+      "Type":"AWS::ElastiCache::SubnetGroup",      
+      "Properties":{"Description":"CacheSubnetGroup","SubnetIds":[{"Ref":"Subnet1"},{"Ref":"Subnet3"},{"Ref":"Subnet3"}]}
     },
     "Database":{
       "Type":"AWS::RDS::DBInstance",
@@ -188,7 +188,7 @@
             {"LoadBalancerPort":80,"Protocol":"http","InstancePort":{"Ref":"ServerPort"},"InstanceProtocol":"http"}
           ]}
         ],
-        "Subnets":{"Fn::Join":[",",[{"Ref":"Subnet1"},{"Ref":"Subnet2"},{"Ref":"Subnet3"}]]},
+        "Subnets":[{"Ref":"Subnet1"},{"Ref":"Subnet2"},{"Ref":"Subnet3"}],
         "SecurityGroups":[{"Ref":"ElbSecurityGroup"}]
       }
     },
@@ -208,6 +208,7 @@
     "InternetGatewayAttachment":{"Type":"AWS::EC2::VPCGatewayAttachment","Properties":{"InternetGatewayId":{"Ref":"InternetGateway"},"VpcId":{"Ref":"Vpc"}}},
     "NotificationTopic":{
       "Type":"AWS::SNS::Topic",
+      "Condition":"NotificationCondition",
       "Properties":{
         "DisplayName":{"Fn::Join":[" ",["AWS event from environment",{"Ref":"AWS::StackName"}]]},
         "Subscription":[{"Protocol":"email","Endpoint":{"Ref":"NotificationEmailAddress"}}],
