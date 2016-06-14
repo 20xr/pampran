@@ -15,9 +15,16 @@ aws configure set default.region $AWS_REGION
 
 echo Retrieving instance information...
 AWS_INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-AWS_INSTANCE_NAME=$(aws ec2 describe-tags --filter "Name=resource-id,Values=$AWS_INSTANCE_ID" --output=text | egrep "^TAGS\s+Name" | sed -r 's/TAGS\t(.*)\t.*\t.*\t(.*)/\2/')
+
+echo Export instance tags as environment variables...
+. <(aws ec2 describe-tags --filter "Name=resource-id,Values=${AWS_INSTANCE_ID}" --output=text | sed -r 's/TAGS\t(.*)\t.*\t.*\t(.*)/TAG_\1=\2/')
+
+echo Known instance tags with friendly names...
+AWS_INSTANCE_NAME=${TAG_Name}
+TAR_BUCKET=${TAG_tarBucket}
 
 # Start Papertrail
+mkdir -p /var/log/papertrail
 /opt/papertrail/remote_syslog/remote_syslog --hostname=${AWS_INSTANCE_NAME}
 
 # Start New Relic
@@ -25,5 +32,22 @@ echo hostname=${AWS_INSTANCE_NAME} >> /etc/newrelic/nrsysmond.cfg
 echo >> /etc/newrelic/nrsysmond.cfg
 /etc/init.d/newrelic-sysmond start
 
-echo Starting user process...
-runuser -l ec2-user -c './aws_init.sh &> /var/log/papertrail/init.log'
+cat << EOF > /opt/sync_app.sh
+aws s3 sync s3://${TAR_BUCKET} /opt/server
+EOF
+chmod 755 /opt/sync.sh
+
+cat << EOF > /opt/cp_s3.sh
+aws s3 sync s3://${TAR_BUCKET}/\$1 /opt/server
+EOF
+chmod 755 /opt/cp_s3.sh
+
+echo Sync S3 bucket...
+mkdir -p /opt/server
+/opt/sync.sh
+
+chown ec2-user /opt/server/*
+chmod +x /opt/server/*.sh
+
+echo Starting init.sh...
+runuser -l ec2-user -c '/opt/server/init.sh &> /var/log/pt/init.log'

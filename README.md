@@ -22,14 +22,18 @@ Procedure
 Make sure you local system has the AWS CLI installed and working. See http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html for help with this.
 
 #### Step 1, Packer build
-In your clone of this repo, first modify two files to include correct address and port for using the Papertrail logging system.
+Run the packer build, which will take a few minutes:
 
-Edit `files/etc/rsyslog.d` and `files/etc/log_files.yml` to change the address and port number to the one you see when you click "Add System" at papertrailapp.com.
-
-Now you can run the packer build, which will take a few minutes:
-
+```
     cd pampran
-    packer build packer.json
+    packer build \
+      -var 'newrelic=bf3822a825435e9ca51c0865949aeca5ce123eaf' \
+      -var 'pthost=logs2.papertrailapp.com' \
+      -var 'ptport=12345' \
+      -var 'region=us-west-2' \
+      -var 'ami=ami-d0f506b0' \
+      packer.json
+    ```
 
 This will create an AMI that can run your node/redis/mysql app. This is intended for low-cost application testing, as it runs everything in one instance. A future project (pampran-cf) will include AWS CloudFormation templates appropriate for a production deployment of an app using reliable, separate deployment of redis and mysql and deployment of the node servers behind ELB with an autoscaling group.
 

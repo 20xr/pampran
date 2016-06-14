@@ -7,8 +7,8 @@
   "builders": [
     {
       "type": "amazon-ebs",
-      "region": "us-west-2",
-      "source_ami": "ami-d0f506b0",
+      "region": "{{user `region`}}",
+      "source_ami": "{{user `ami`}}",
       "instance_type": "t2.small",
       "ssh_username": "ec2-user",
       "ami_name": "pampran-ami.{{timestamp}}",
@@ -27,7 +27,11 @@
       "type": "shell",
       "pause_before": "30s",
       "execute_command": "{{ .Vars }} sudo -E /bin/bash '{{ .Path }}'",
-      "environment_vars": ["NEWRELIC_LICENSE={{user `newrelic`}}"],
+      "environment_vars": [
+        "NEWRELIC_LICENSE={{user `newrelic`}}",
+        "PAPERTRAIL_HOST={{user `pthost`}}",
+        "PAPERTRAIL_PORT={{user `ptport`}}"
+      ],
       "scripts": [
         "scripts/yum-update.sh",
         "scripts/nodejs.sh",
