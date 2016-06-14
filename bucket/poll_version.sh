@@ -1,16 +1,16 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # copy the latest version file from s3 bucket
 /opt/cp_s3.sh version
-export VERSION_ID=`sed -n '1p' < version`
+export VERSION_ID=`sed -n '1p' < /opt/server/version`
 
 # when VERSION_ID is new, move old code aside and sync new code
 if [ ! -f /opt/server/versions/${VERSION_ID} ]; then
 
-  touch /opt/server/versions/${VERSION_ID}
+  echo New version in bucket: ${VERSION_ID}
 
   # sync to get all up-to-date files from s3 bucket
-  /opt/sync.sh
+  /opt/sync_bucket.sh
 
   # move currently running server out of the way
   rm -rf /opt/server/old_install

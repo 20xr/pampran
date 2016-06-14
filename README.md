@@ -38,7 +38,12 @@ Run the packer build, which will take a few minutes:
 This will create an AMI that can run your node/redis/mysql app. This is intended for low-cost application testing, as it runs everything in one instance. A future project (pampran-cf) will include AWS CloudFormation templates appropriate for a production deployment of an app using reliable, separate deployment of redis and mysql and deployment of the node servers behind ELB with an autoscaling group.
 
 #### Step 2, Create IAM role
-To create an instance for testing, first create an IAM profile for AmazonS3ReadOnlyAccess. (See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html for help with this.)
+To create an instance for testing, first create an IAM profile for:
+
+0. AmazonS3ReadOnlyAccess
+0. AmazonEC2ReadOnlyAccess
+
+(See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html for help with this.)
 
 #### Step 3, Create S3 bucket
 

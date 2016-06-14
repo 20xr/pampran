@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # This script will be executed *after* all the other init scripts.
 # You can put your own initialization stuff in here if you don't
@@ -25,6 +25,7 @@ TAR_BUCKET=${TAG_tarBucket}
 
 # Start Papertrail
 mkdir -p /var/log/papertrail
+chmod 777 /var/log/papertrail
 /opt/papertrail/remote_syslog/remote_syslog --hostname=${AWS_INSTANCE_NAME}
 
 # Start New Relic
@@ -32,22 +33,23 @@ echo hostname=${AWS_INSTANCE_NAME} >> /etc/newrelic/nrsysmond.cfg
 echo >> /etc/newrelic/nrsysmond.cfg
 /etc/init.d/newrelic-sysmond start
 
-cat << EOF > /opt/sync_app.sh
-aws s3 sync s3://${TAR_BUCKET} /opt/server
+cat << EOF > /opt/sync_bucket.sh
+aws --region ${AWS_REGION} s3 sync s3://${TAR_BUCKET} /opt/server
 EOF
-chmod 755 /opt/sync.sh
+chmod 755 /opt/sync_bucket.sh
 
 cat << EOF > /opt/cp_s3.sh
-aws s3 sync s3://${TAR_BUCKET}/\$1 /opt/server
+aws --region ${AWS_REGION} s3 sync s3://${TAR_BUCKET}/\$1 /opt/server
 EOF
 chmod 755 /opt/cp_s3.sh
 
 echo Sync S3 bucket...
 mkdir -p /opt/server
-/opt/sync.sh
+chown ec2-user /opt/server
+/opt/sync_bucket.sh
 
 chown ec2-user /opt/server/*
 chmod +x /opt/server/*.sh
 
 echo Starting init.sh...
-runuser -l ec2-user -c '/opt/server/init.sh &> /var/log/pt/init.log'
+runuser -l ec2-user -c '/opt/server/init.sh &> /var/log/papertrail/init.log'

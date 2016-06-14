@@ -1,5 +1,6 @@
+#!/usr/bin/env bash
 while [ 1 ]
 do
   sleep 20
-  ./poll_version.sh
+  /opt/server/poll_version.sh
 done
