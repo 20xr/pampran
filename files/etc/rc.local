@@ -39,7 +39,7 @@ EOF
 chmod 755 /opt/sync_bucket.sh
 
 cat << EOF > /opt/cp_s3.sh
-aws --region ${AWS_REGION} s3 sync s3://${TAR_BUCKET}/\$1 /opt/server
+aws --region ${AWS_REGION} s3 cp s3://${TAR_BUCKET}/\$1 /opt/server
 EOF
 chmod 755 /opt/cp_s3.sh
 

@@ -9,7 +9,7 @@ touch /opt/server/versions/${VERSION_ID}
 
 mkdir -p /opt/server/install
 cd install
-#tar xf /opt/server/${TARBALL}
-#cd ${PACKAGE_NAME}
+tar --warning=no-unknown-keyword -xf /opt/server/${TARBALL}
+cd package
 echo Installing server with npm...
-npm install /opt/server/${TARBALL}
+npm install

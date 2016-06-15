@@ -24,7 +24,7 @@ function main() {
   let n = 0
   function loop() {
     setTimeout(() => {
-      console.log('main',n++)
+      console.log('main at',n++)
       loop()
     },5000)
   }
