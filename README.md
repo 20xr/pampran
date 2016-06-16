@@ -64,9 +64,28 @@ To create an instance for testing, first create an IAM profile for:
 
 In this example, we create a bucket for the node package in the test directory called 'simple'. S3 bucket names must be globally unique, even if they are private buckets, as in this example. You need to use your own domain name, or make it weird enough to be globally unique, or the command will fail
 
-`aws s3 mb s3://simple.freak-domain.party`
+Exmaple:
 
-#### 3. Upload your node package to the bucket
+`aws s3 mb s3://simple.my-dom.party`
+
+#### 3. Upload shell scripts to bucket
+
+Example:
+
+```
+cd pampran/bucket
+
+aws s3 sync . s3://simple.my-dom.party`
+```
+The generated AMI includes a script at /etc/rc.local that does an s3 sync from your bucket to /opt/server, then runs the script named "init.sh" that was downloaded from your bucket.
+
+`/opt/server/init.sh`
+
+The bucket directory contains an example of an init.sh script. It downloads a node.sh package from the bucket, installs it, and runs it. The server is run with the Node Forever utility, and the output is sent to /var/log/papertrail, where is is picked up by the papertrail daemon and sent to your papertrailapp.com console. After your app is running, the "repeat_poll.sh" script polls the bucket for a new version every 20 seconds. If it finds an new version, it downloads the new version, installs it, stops the old server, and starts the new one.
+
+These are simple bash scripts which you can read and modify for your own requirements. For example, you may want to change the polling interval in repeat_poll.sh, or add environment variables needed by your app to start_server.sh. The scripts are synced from the bucket every time the "version" file in the bucket has a new unique version id. If you change the init.sh script, you will most likely want to reboot your server so /etc/rc.local will run the new init.sh on reboot. (You can use the AWS console to reboot.)
+
+#### 4. Upload your node package to the bucket
 
 A shell script is provided for this.
 
@@ -85,19 +104,19 @@ You can try this out with the trivial node package in the test directory.
 Example:
 
 `cd test/simple`
-`../../tools/uploadPackage.sh simple.freak-domain.party`
+`../../tools/uploadPackage.sh simple.my-dom.party`
 
-#### 4. Start an EC2 instance
+#### 5. Start an EC2 instance
 
 To test this, launch an EC2 instance from the AWS console:
 1. In the EC dashboard, select AMI, the choose the AMI that was just built by Packer.
 2. Press the Launch button, and in the launch wizard choose an instance type (micro or small is fine for a test.)
 3. Next: Configure Instance Details, then select the IAM role you created in step 2.
-4. Continue through the Wizard to Tag Instance, pick a name you will recognize, then create another tag with the Key: "tarBucket" with the value being the name of the s3 bucket you created in step 3, e.g. "simple.freak-domain.party".
+4. Continue through the Wizard to Tag Instance, pick a name you will recognize, then create another tag with the Key: "tarBucket" with the value being the name of the s3 bucket you created in step 3, e.g. "simple.my-dom.party".
 
 When this instance comes up, it will download the 'simple' package from the tarBucket, and start it.
 
-#### 5. Monitor server log with Papertrail
+#### 6. Monitor server log with Papertrail
 
 Go to papertrailapp.com (you will have created an account there before starting this) and select the 'events' tab. The log messages for the server you started will show up next to the AWS internal IP address for the EC2 instance.
 
@@ -118,8 +137,8 @@ cd cf
 ./create-stack.sh
 ```
 
-It asks you for a stack name (e.g. dev, test, prod), a domain name (your's hopefully) and an AMI id, which will be tyhe one you just created with Packer.
+It asks you for a stack name (e.g. dev, test, prod), a domain name (your's hopefully) and an AMI id, which will be the one you just created with Packer.
 
-It then calls aws cloudformation create-stack, which starts the process of creating a stack on your AWS account. To monitor the progress, go the the CloudFormation console for AWS.
+It then calls `aws cloudformation create-stack`, which starts the process of creating a stack on your AWS account. To monitor the progress, go the the CloudFormation console for AWS.
 
-There is a lot to know about CloudFormation, so you will have to read the docs and the stack.json template to figure out what is going on. I have tried to make the template as simple as possible, given what it is intended to do. :-)
+There is a lot to know about CloudFormation, so you will have to read the AWS docs and the stack.json template to figure out what is going on.
