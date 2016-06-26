@@ -9,7 +9,8 @@ read_default () {
 
 STACK_NAME=$(read_default "Stack name" "test")
 DOMAIN_NAME=$(read_default "Domain name" "")
-AMI_ID=$(read_default "AMI id" "")
+AMI_ID=$(read_default "AMI id" "ami-a4827dc9")
+SSH_KEYNAME=$(read_default "SSH key" "")
 
 aws cloudformation create-stack \
   --stack-name ${STACK_NAME} \
@@ -18,4 +19,5 @@ aws cloudformation create-stack \
   --capabilities CAPABILITY_IAM \
   --parameters \
   ParameterKey=DomainName,ParameterValue=${DOMAIN_NAME} \
+  ParameterKey=SshKeyName,ParameterValue=${SSH_KEYNAME} \
   ParameterKey=ImageId,ParameterValue=${AMI_ID}

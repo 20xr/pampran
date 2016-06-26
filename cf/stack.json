@@ -1,5 +1,6 @@
 {
   "Conditions":{
+    "CreateCnameCondition":{"Fn::Not":[{"Fn::Equals":[{"Ref":"HostedZone"},"none"]}]},
     "NotificationCondition":{"Fn::Not":[{"Fn::Equals":[{"Ref":"NotificationEmailAddress"},""]}]},
     "UseSSLCondition":{"Fn::Not":[{"Fn::Equals":[{"Ref":"SSLCertificateId"},"none"]}]}
   },
@@ -19,13 +20,14 @@
     "DBSnapshotIdentifier":{"Description":"Snapshot from which to create DB","Type":"String","Default":""},
     "DBUsername":{"Type":"String","Default":"DBUser"},
     "DomainName":{"Type":"String"},
+    "HostedZone":{"Type":"String","Default":"none"},
     "ImageId":{"Description":"AMI ID for LaunchConfiguration","Type":"String"},
     "NotificationEmailAddress":{"Type":"String","Default":""},
     "RedisPort":{"Description":"Redis port","Type":"Number","Default":"6379"},
     "ServerInstanceMonitoring":{"Type":"String","Default":"false"},
     "ServerInstanceType":{"Type":"String","Default":"t2.small"},
     "ServerPort":{"Type":"Number","Default":"3000"},
-    "SshKeyName":{"Type":"String","Default":"app1"},
+    "SshKeyName":{"Type":"String"},
     "SSLCertificateId":{"Type":"String","Default":"none"},
     "VpcIpBlock":{"Description":"CIDR block for VPC","Type":"String","Default":"10.100.128.0/18"}
   },
@@ -39,35 +41,17 @@
         "InstanceMonitoring":{"Ref":"ServerInstanceMonitoring"},
         "InstanceType":{"Ref":"ServerInstanceType"},
         "KeyName":{"Ref":"SshKeyName"},
-        "SecurityGroups":[{"Ref":"ServerSecurityGroup"}],
-        "UserData":{"Fn::Base64":{"Fn::Join":[
-          "",
-          [
-            "CACHE_CLUSTER=",
-            {"Ref":"CacheCluster"},
-            "\n",
-            "DB_HOST=",
-            {"Fn::GetAtt":["Database","Endpoint.Address"]},
-            "\n",
-            "DB_PORT=",
-            {"Fn::GetAtt":["Database","Endpoint.Port"]},
-            "\n",
-            "DB_USER=",
-            {"Ref":"DBUsername"},
-            "\n",
-            "DB_PASSWORD=",
-            {"Ref":"DBPassword"},
-            "\n",
-            "DB_NAME=appdb",
-            "\n"
-          ]
-        ]}}
+        "SecurityGroups":[{"Ref":"ServerSecurityGroup"}]
       }
     },
     "ASGroup":{
       "Type":"AWS::AutoScaling::AutoScalingGroup",
       "Properties":{
-        "AvailabilityZones":{"Fn::GetAZs":{"Ref":"AWS::Region"}},
+        "AvailabilityZones":[
+          {"Fn::GetAtt":["Subnet1","AvailabilityZone"]},
+          {"Fn::GetAtt":["Subnet2","AvailabilityZone"]},
+          {"Fn::GetAtt":["Subnet3","AvailabilityZone"]}
+        ],
         "Cooldown":"60",
         "DesiredCapacity":{"Ref":"AsgDesiredCapacity"},
         "HealthCheckGracePeriod":"30",
@@ -90,8 +74,13 @@
           },
           {"Ref":"AWS::NoValue"}
         ]},
-        "Tags":[{"Key":"Name","Value":"NodeServer","PropagateAtLaunch":true}],
-        "VPCZoneIdentifier":{"Fn::Join":[",",[{"Ref":"Subnet1"},{"Ref":"Subnet2"},{"Ref":"Subnet3"}]]}
+        "Tags":[
+          {"Key":"Name","Value":"NodeServer","PropagateAtLaunch":true},
+          {"Key":"tarBucket","Value":{"Fn::Join":[".",[{"Ref":"AWS::StackName"},{"Ref":"DomainName"}]]},"PropagateAtLaunch":true},
+          {"Key":"CACHE_CLUSTER","Value":{"Ref":"CacheCluster"},"PropagateAtLaunch":true},
+          {"Key":"DB_HOST","Value":{"Fn::GetAtt":["Database","Endpoint.Address"]},"PropagateAtLaunch":true}
+        ],
+        "VPCZoneIdentifier":[{"Ref":"Subnet1"},{"Ref":"Subnet2"},{"Ref":"Subnet3"}]
       }
     },
     "ASGroupScaleUpPolicy":{
@@ -119,7 +108,7 @@
       }
     },
     "CacheSubnetGroup":{
-      "Type":"AWS::ElastiCache::SubnetGroup",      
+      "Type":"AWS::ElastiCache::SubnetGroup",
       "Properties":{"Description":"CacheSubnetGroup","SubnetIds":[{"Ref":"Subnet1"},{"Ref":"Subnet3"},{"Ref":"Subnet3"}]}
     },
     "Database":{
@@ -156,9 +145,10 @@
     },
     "ElbCname":{
       "Type":"AWS::Route53::RecordSet",
+      "Condition" : "CreateCnameCondition",
       "Properties":{
         "Type":"CNAME",
-        "HostedZoneName":"armor.kixeye.com.",
+        "HostedZoneName":{"Ref":"HostedZone"},
         "Name":{"Fn::Join":[".",[{"Ref":"AWS::StackName"},{"Ref":"DomainName"}]]},
         "ResourceRecords":[{"Fn::GetAtt":["ElbResource","DNSName"]}],
         "TTL":"900"
@@ -224,9 +214,19 @@
     "S3Bucket":{
       "Type":"AWS::S3::Bucket",
       "DeletionPolicy":"Retain",
-      "Properties":{"AccessControl":"Private","BucketName":{"Fn::Join":[".",[{"Ref":"AWS::StackName"},{"Ref":"DomainName"}]]}}
+      "Properties":{
+        "AccessControl":"Private",
+        "BucketName":{"Fn::Join":[".",[{"Ref":"AWS::StackName"},{"Ref":"DomainName"}]]}
+      }
     },
-    "ServerInstanceProfile":{"Type":"AWS::IAM::InstanceProfile","Properties":{"Path":"/","Roles":[{"Ref":"ServerRole"}]},"DependsOn":"ServerRole"},
+    "ServerInstanceProfile":{
+      "Type":"AWS::IAM::InstanceProfile",
+      "Properties":{
+        "Path":"/",
+        "Roles":[{"Ref":"ServerRole"}]
+      },
+      "DependsOn":"ServerRole"
+    },
     "ServerRole":{
       "Type":"AWS::IAM::Role",
       "Properties":{
