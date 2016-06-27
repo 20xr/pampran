@@ -47,14 +47,9 @@
     "ASGroup":{
       "Type":"AWS::AutoScaling::AutoScalingGroup",
       "Properties":{
-        "AvailabilityZones":[
-          {"Fn::GetAtt":["Subnet1","AvailabilityZone"]},
-          {"Fn::GetAtt":["Subnet2","AvailabilityZone"]},
-          {"Fn::GetAtt":["Subnet3","AvailabilityZone"]}
-        ],
         "Cooldown":"60",
         "DesiredCapacity":{"Ref":"AsgDesiredCapacity"},
-        "HealthCheckGracePeriod":"30",
+        "HealthCheckGracePeriod":"3000",
         "HealthCheckType":"ELB",
         "LaunchConfigurationName":{"Ref":"AppLaunchConfiguration"},
         "LoadBalancerNames":[{"Ref":"ElbResource"}],
@@ -266,7 +261,13 @@
         "VpcId":{"Ref":"Vpc"}
       }
     },
-    "Subnet1RouteTableAssociation":{"Type":"AWS::EC2::SubnetRouteTableAssociation","Properties":{"RouteTableId":{"Ref":"RouteTable"},"SubnetId":{"Ref":"Subnet1"}}},
+    "Subnet1RouteTableAssociation":{
+      "Type":"AWS::EC2::SubnetRouteTableAssociation",
+      "Properties":{
+        "RouteTableId":{"Ref":"RouteTable"},
+        "SubnetId":{"Ref":"Subnet1"}
+      }
+    },
     "Subnet2":{
       "Type":"AWS::EC2::Subnet",
       "Properties":{
@@ -281,7 +282,13 @@
         "VpcId":{"Ref":"Vpc"}
       }
     },
-    "Subnet2RouteTableAssociation":{"Type":"AWS::EC2::SubnetRouteTableAssociation","Properties":{"RouteTableId":{"Ref":"RouteTable"},"SubnetId":{"Ref":"Subnet2"}}},
+    "Subnet2RouteTableAssociation":{
+      "Type":"AWS::EC2::SubnetRouteTableAssociation",
+      "Properties":{
+        "RouteTableId":{"Ref":"RouteTable"},
+        "SubnetId":{"Ref":"Subnet2"}
+      }
+    },
     "Subnet3":{
       "Type":"AWS::EC2::Subnet",
       "Properties":{
@@ -296,7 +303,13 @@
         "VpcId":{"Ref":"Vpc"}
       }
     },
-    "Subnet3RouteTableAssociation":{"Type":"AWS::EC2::SubnetRouteTableAssociation","Properties":{"RouteTableId":{"Ref":"RouteTable"},"SubnetId":{"Ref":"Subnet3"}}},
+    "Subnet3RouteTableAssociation":{
+      "Type":"AWS::EC2::SubnetRouteTableAssociation",
+      "Properties":{
+        "RouteTableId":{"Ref":"RouteTable"},
+        "SubnetId":{"Ref":"Subnet3"}
+      }
+    },
     "Vpc":{
       "Type":"AWS::EC2::VPC",
       "Properties":{
