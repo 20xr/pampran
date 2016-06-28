@@ -10,7 +10,7 @@
     "AsgMinSize":{"Type":"Number","Default":"1"},
     "CacheClusterName":{"Type":"String","Default":"AppCluster"},
     "CacheClusterSize":{"Type":"Number","Default":"1"},
-    "CacheNodeType":{"Description":"Redis nodes instance type","Type":"String","Default":"cache.t2.small"},
+    "CacheNodeType":{"Description":"Redis nodes instance type","Type":"String","Default":"cache.t2.micro"},
     "DBAllocatedStorage":{"Description":"GB storage for database","Type":"Number","Default":5},
     "DBBackupRetentionPeriod":{"Description":"DB snapshot retention in days","Type":"Number","Default":30},
     "DBInstanceClass":{"Description":"RDS instance type","Type":"String","Default":"db.t2.small"},
@@ -25,7 +25,7 @@
     "NotificationEmailAddress":{"Type":"String","Default":""},
     "RedisPort":{"Description":"Redis port","Type":"Number","Default":"6379"},
     "ServerInstanceMonitoring":{"Type":"String","Default":"false"},
-    "ServerInstanceType":{"Type":"String","Default":"t2.small"},
+    "ServerInstanceType":{"Type":"String","Default":"t2.micro"},
     "ServerPort":{"Type":"Number","Default":"3000"},
     "SshKeyName":{"Type":"String"},
     "SSLCertificateId":{"Type":"String","Default":"none"},
@@ -161,16 +161,19 @@
           "UnhealthyThreshold":2
         },
         "Listeners":[
-          {"Fn::If":[
-            "UseSSLCondition",
+          {"Fn::If":["UseSSLCondition",
             {
-              "InstancePort":{"Ref":"ServerPort"},
-              "InstanceProtocol":"http",
-              "LoadBalancerPort":443,
-              "Protocol":"https",
+              "InstancePort": {"Ref":"ServerPort"},
+              "InstanceProtocol": "tcp",
+              "LoadBalancerPort":{"Ref":"ServerPort"},
+              "Protocol": "ssl",
               "SSLCertificateId":{"Ref":"SSLCertificateId"}
-            },
-            {"LoadBalancerPort":80,"Protocol":"http","InstancePort":{"Ref":"ServerPort"},"InstanceProtocol":"http"}
+            },{
+              "InstancePort": {"Ref":"ServerPort"},
+              "InstanceProtocol": "tcp",
+              "LoadBalancerPort":{"Ref":"ServerPort"},
+              "Protocol": "tcp"
+            }
           ]}
         ],
         "Subnets":[{"Ref":"Subnet1"},{"Ref":"Subnet2"},{"Ref":"Subnet3"}],

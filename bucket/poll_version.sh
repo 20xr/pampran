@@ -11,6 +11,7 @@ if [ ! -f /opt/server/versions/${VERSION_ID} ]; then
 
   # sync to get all up-to-date files from s3 bucket
   /opt/sync_bucket.sh
+  chmod +x /opt/server/*.sh
 
   # move currently running server out of the way
   rm -rf /opt/server/old_install
