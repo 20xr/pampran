@@ -21,7 +21,17 @@ echo Export instance tags as environment variables...
 
 echo Known instance tags with friendly names...
 AWS_INSTANCE_NAME=${TAG_Name}
-TAR_BUCKET=${TAG_tarBucket}
+TAR_BUCKET=${TAG_TAR_BUCKET}
+CACHE_CLUSTER=${TAG_CACHE_CLUSTER}
+DB_HOST=${TAG_DB_HOST}
+
+cat << EOF > /opt/env.sh
+export AWS_INSTANCE_NAME=${TAG_Name}
+export TAR_BUCKET=${TAG_TAR_BUCKET}
+export CACHE_CLUSTER=${TAG_CACHE_CLUSTER}
+export DB_HOST=${TAG_DB_HOST}
+EOF
+chmod 755 /opt/env.sh
 
 # Start Papertrail
 mkdir -p /var/log/papertrail

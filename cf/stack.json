@@ -71,7 +71,7 @@
         ]},
         "Tags":[
           {"Key":"Name","Value":"NodeServer","PropagateAtLaunch":true},
-          {"Key":"tarBucket","Value":{"Fn::Join":[".",[{"Ref":"AWS::StackName"},{"Ref":"DomainName"}]]},"PropagateAtLaunch":true},
+          {"Key":"TAR_BUCKET","Value":{"Fn::Join":[".",[{"Ref":"AWS::StackName"},{"Ref":"DomainName"}]]},"PropagateAtLaunch":true},
           {"Key":"CACHE_CLUSTER","Value":{"Ref":"CacheCluster"},"PropagateAtLaunch":true},
           {"Key":"DB_HOST","Value":{"Fn::GetAtt":["Database","Endpoint.Address"]},"PropagateAtLaunch":true}
         ],
